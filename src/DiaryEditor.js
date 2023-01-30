@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
+import DiaryList from "./DiaryList";
 
-const DiaryEditor = () => {
+const DiaryEditor = ({ onCreate }) => {
   const [state, setState] = useState({
     author: "",
     content: "",
@@ -9,7 +10,6 @@ const DiaryEditor = () => {
 
   const authorInput = useRef();
   const contentInput = useRef();
-
   const handleChangeState = (e) => {
     // console.log(e.target.value);
     // console.log(e);
@@ -30,6 +30,12 @@ const DiaryEditor = () => {
     }
     alert("저장 성공");
     console.log(state);
+    onCreate(state.author, state.content, state.emotion);
+    setState({
+      author: "",
+      content: "",
+      emotion: 1,
+    });
   };
   return (
     <div className="DiaryEditor">
