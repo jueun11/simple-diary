@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
-import LifeCycle from "./LifeCycle";
+
+//https://jsonplaceholder.typicode.com/comments
 
 // const dummyList = [
 //   {
@@ -31,7 +32,28 @@ import LifeCycle from "./LifeCycle";
 
 function App() {
   const [data, setData] = useState([]);
+
   const dataId = useRef(0);
+
+  const getData = async () => {
+    const res = await fetch(
+      "https://jsonplaceholder.typicode.com/comments"
+    ).then((res) => res.json());
+    console.log(res);
+    const initData = res.slice(0, 20).map((el) => {
+      return {
+        author: el.email,
+        content: el.body,
+        emotion: Math.floor(Math.random() * 5) + 1,
+        create_date: new Date().getTime(),
+        id: dataId.current++,
+      };
+    });
+    setData(initData);
+  };
+  useEffect(() => {
+    getData();
+  }, []);
   const onCreate = (author, content, emotion) => {
     const create_date = new Date().getTime();
     const newItem = {
@@ -60,7 +82,6 @@ function App() {
 
   return (
     <div className="App">
-      <LifeCycle />
       <DiaryEditor onCreate={onCreate} />
       <DiaryList diaryList={data} onRemove={onRemove} onEdit={onEdit} />
     </div>
