@@ -16,4 +16,4 @@ const DiaryList = ({ diaryList, onRemove, onEdit }) => {
 DiaryList.defaultProps = {
   diaryList: [],
 };
-export default DiaryList;
+export default React.memo(DiaryList);
