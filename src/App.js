@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
@@ -53,7 +53,7 @@ function App() {
   useEffect(() => {
     getData();
   }, []);
-  const onCreate = (author, content, emotion) => {
+  const onCreate = useCallback((author, content, emotion) => {
     const create_date = new Date().getTime();
     const newItem = {
       author,
@@ -63,21 +63,21 @@ function App() {
       id: dataId.current,
     };
     dataId.current += 1;
-    setData([newItem, ...data]);
-  };
+    setData((data) => [newItem, ...data]);
+  }, []);
 
-  const onRemove = (targetId) => {
-    const newDiaryList = data.filter((el) => el.id !== targetId);
-    setData(newDiaryList);
-  };
+  const onRemove = useCallback((targetId) => {
+    setData((data) => data.filter((el) => el.id !== targetId));
+  }, []);
 
-  const onEdit = (targetId, newContent) => {
-    setData(
+  const onEdit = useCallback((targetId, newContent) => {
+    setData((data) =>
       data.map((el) =>
         el.id === targetId ? { ...el, content: newContent } : el
       )
     );
-  };
+  }, []);
+
   const getDiaryAnalysis = useMemo(() => {
     const goodCount = data.filter((el) => el.emotion >= 3).length;
     //기분이 좋은 것은 기존 data에서 emotion값이 3이상인 것을 걸러주면 된다.
