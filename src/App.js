@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
@@ -39,7 +39,6 @@ function App() {
     const res = await fetch(
       "https://jsonplaceholder.typicode.com/comments"
     ).then((res) => res.json());
-    console.log(res);
     const initData = res.slice(0, 20).map((el) => {
       return {
         author: el.email,
@@ -79,10 +78,24 @@ function App() {
       )
     );
   };
+  const getDiaryAnalysis = useMemo(() => {
+    const goodCount = data.filter((el) => el.emotion >= 3).length;
+    //기분이 좋은 것은 기존 data에서 emotion값이 3이상인 것을 걸러주면 된다.
+    const badCount = data.length - goodCount;
+    const goodRatio = (goodCount / data.length) * 100;
+    return { goodCount, badCount, goodRatio };
+    //3개의 상수를 객체로 리턴해준다. {}객체리터널
+  }, [data.length]);
+
+  const { goodCount, badCount, goodRatio } = getDiaryAnalysis;
 
   return (
     <div className="App">
       <DiaryEditor onCreate={onCreate} />
+      <div>전체 일기 : {data.length}</div>
+      <div>기분 좋은 일기 개수 : {goodCount}</div>
+      <div>기분 나쁜 일기 개수 : {badCount}</div>
+      <div>기분 좋은 일기 비율 : {goodRatio}</div>
       <DiaryList diaryList={data} onRemove={onRemove} onEdit={onEdit} />
     </div>
   );
